@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f7f7f7;
+    margin: 0;
+}
+
+.quiz-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    padding: 20px;
+    text-align: center;
+}
+
+.hide {
+    display: none;
+}
+
+.btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.btn-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.btn-container .btn {
+    margin: 5px 0;
+}
+
+#result-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+</style>
+<body>
+    <div class="quiz-container">
+        <div id="question-container" class="hide">
+            <div id="question">Question</div>
+            <div id="answer-buttons" class="btn-container"></div>
+        </div>
+        <div id="start-container">
+            <button id="start-btn" class="btn">Start Quiz</button>
+        </div>
+        <div id="result-container" class="hide">
+            <div id="result">Your Score: <span id="score"></span></div>
+            <button id="restart-btn" class="btn">Restart Quiz</button>
+        </div>
+    </div>
+    <script>const startButton = document.getElementById('start-btn');
+        const restartButton = document.getElementById('restart-btn');
+        const questionContainer = document.getElementById('question-container');
+        const resultContainer = document.getElementById('result-container');
+        const questionElement = document.getElementById('question');
+        const answerButtonsElement = document.getElementById('answer-buttons');
+        const scoreElement = document.getElementById('score');
+        
+        let shuffledQuestions, currentQuestionIndex;
+        let score = 0;
+        
+        const questions = [
+            {
+                question: 'What is the capital of France?',
+                answers: [
+                    { text: 'Paris', correct: true },
+                    { text: 'London', correct: false },
+                    { text: 'Berlin', correct: false },
+                    { text: 'Madrid', correct: false }
+                ]
+            },
+            {
+                question: 'Who wrote "To Kill a Mockingbird"?',
+                answers: [
+                    { text: 'Harper Lee', correct: true },
+                    { text: 'Mark Twain', correct: false },
+                    { text: 'Ernest Hemingway', correct: false },
+                    { text: 'F. Scott Fitzgerald', correct: false }
+                ]
+            },
+            {
+                question: 'What is the smallest planet in our solar system?',
+                answers: [
+                    { text: 'Mercury', correct: true },
+                    { text: 'Mars', correct: false },
+                    { text: 'Venus', correct: false },
+                    { text: 'Earth', correct: false }
+                ]
+            }
+        ];
+        
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+        
+        function startGame() {
+            startButton.classList.add('hide');
+            resultContainer.classList.add('hide');
+            questionContainer.classList.remove('hide');
+            shuffledQuestions = questions.sort(() => Math.random() - 0.5);
+            currentQuestionIndex = 0;
+            score = 0;
+            setNextQuestion();
+        }
+        
+        function setNextQuestion() {
+            resetState();
+            showQuestion(shuffledQuestions[currentQuestionIndex]);
+        }
+        
+        function showQuestion(question) {
+            questionElement.innerText = question.question;
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.classList.add('btn');
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener('click', selectAnswer);
+                answerButtonsElement.appendChild(button);
+            });
+        }
+        
+        function resetState() {
+            while (answerButtonsElement.firstChild) {
+                answerButtonsElement.removeChild(answerButtonsElement.firstChild);
+            }
+        }
+        
+        function selectAnswer(e) {
+            const selectedButton = e.target;
+            const correct = selectedButton.dataset.correct;
+            if (correct) {
+                score++;
+            }
+            currentQuestionIndex++;
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                setNextQuestion();
+            } else {
+                showResult();
+            }
+        }
+        
+        function showResult() {
+            questionContainer.classList.add('hide');
+            resultContainer.classList.remove('hide');
+            scoreElement.innerText = score;
+        }
+        </script>
+</body>
+</html>
